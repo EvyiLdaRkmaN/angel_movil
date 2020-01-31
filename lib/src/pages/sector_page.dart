@@ -29,10 +29,25 @@ class SectorPage extends StatelessWidget {
         children: <Widget>[
           RaisedButton(
               child: Text('Eduación'),
-
+              onPressed: (){
+                String title = 'Educación';
+                Navigator.pushNamed(
+                  context,
+                  'setReport',
+                  arguments: title
+                );
+              },
             ),
           RaisedButton(
               child: Text('Salud'),
+              onPressed: (){
+                String title = 'Salud';
+                Navigator.pushNamed(
+                  context,
+                  'setReport',
+                  arguments: title
+                );
+              },
             ),
         ],
       ),
@@ -41,9 +56,25 @@ class SectorPage extends StatelessWidget {
         children: <Widget>[
           RaisedButton(
               child: Text('Producción'),
+              onPressed: (){
+                String title = 'Producción';
+                Navigator.pushNamed(
+                  context,
+                  'setReport',
+                  arguments: title
+                );
+              },
             ),
           RaisedButton(
               child: Text('Caminos'),
+              onPressed: (){
+                String title = 'Caminos';
+                Navigator.pushNamed(
+                  context,
+                  'setReport',
+                  arguments: title
+                );
+              },
             ),
         ],
       )
