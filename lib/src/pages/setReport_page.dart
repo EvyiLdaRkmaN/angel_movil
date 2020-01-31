@@ -1,3 +1,5 @@
+import 'package:angel_proyect/src/models/reporte_model.dart';
+import 'package:angel_proyect/src/utils/api_utils.dart';
 import 'package:flutter/material.dart';
 
 
@@ -9,12 +11,16 @@ class SetReportPage extends StatefulWidget {
 class _SetReportPageState extends State<SetReportPage> {
   final colorBase = 0xFF33FF9B;
   String text= '';
-  String dropdownValue  ='Normal';
+  String dropdownValue  ='Prioridad';
   final _localidadControll = TextEditingController();
+  final _peticionControll = TextEditingController();
+  final _objetivoControll = TextEditingController();
+  final _key = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     text = ModalRoute.of(context).settings.arguments;
     return Scaffold(
+      key: _key,
       appBar: AppBar(
         title: Column(
           children: <Widget>[
@@ -67,7 +73,7 @@ class _SetReportPageState extends State<SetReportPage> {
 
   Widget _inputPeticion(){
     return TextFormField(
-      controller: _localidadControll,
+      controller: _peticionControll,
       decoration: InputDecoration(
         // icon: Icon(Icons.lock),
         hintText: 'Petición',
@@ -79,7 +85,7 @@ class _SetReportPageState extends State<SetReportPage> {
 
   Widget _inputObjetivo(){
     return TextFormField(
-      controller: _localidadControll,
+      controller: _objetivoControll,
       decoration: InputDecoration(
         // icon: Icon(Icons.lock),
         hintText: 'Objetivo',
@@ -93,7 +99,7 @@ class _SetReportPageState extends State<SetReportPage> {
   Widget _inputPrioridad(){
     return DropdownButton<String>(
       value: dropdownValue ,
-      items: ['Alta','Baja','Normal'].map((f)=>DropdownMenuItem<String>(child: Text(f),value: f,)).toList(), 
+      items: ['Prioridad','Alta','Baja','Normal'].map((f)=>DropdownMenuItem<String>(child: Text(f),value: f,)).toList(), 
       onChanged: (String value) {
         print('Valor drop--->$value');
         setState(() {
@@ -108,8 +114,34 @@ class _SetReportPageState extends State<SetReportPage> {
     return IconButton(
       icon: Icon(Icons.done,color: Color(colorBase),),
       iconSize: 50.0,
-      onPressed: (){
-        
+      onPressed: () async{
+        String mensaje = '';
+        String localidad = _localidadControll.text;
+        String peticion = _peticionControll.text;
+        String objetivo = _objetivoControll.text;
+        String tipo     = dropdownValue;
+        if (localidad.isEmpty||peticion.isEmpty||objetivo.isEmpty||tipo == 'Prioridad') {
+          mensaje = 'Todos los datos son requeridos';
+        }else{
+          final r = Reporte(
+            localidad: localidad,
+            reporteObjetivo: objetivo,
+            reportePeticion: peticion,
+            reportePrioridad: tipo
+          );
+          final response = await Api().addReport(r);
+          mensaje = response ? 'Registro exitoso':'Lo sentimos ocurrio un error al registrar';
+          if (response) {
+            _localidadControll.clear();
+            _peticionControll.clear();
+            _objetivoControll.clear();
+            setState(() {
+              dropdownValue = 'Prioridad';
+            });
+          }
+        }
+        final snackbar = SnackBar(content: Text(mensaje),);
+        _key.currentState.showSnackBar(snackbar);
       },
     );
   }

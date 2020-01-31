@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:angel_proyect/src/models/reporte_model.dart';
 import 'package:angel_proyect/src/models/usuario_model.dart';
 import 'package:angel_proyect/src/utils/prefs_utils.dart';
 import 'package:http/http.dart' as http;
@@ -100,6 +101,11 @@ class Api {
       prefs.user = usuarioToJson(Usuario.fromJson(response[1]['objUsuario'][0]));
       // print('Datos-->'+prefs.user);
     }
+    return response[0];
+  }
+
+  Future<bool> addReport(Reporte r) async{
+    final response = await _post(url+'/reporte', r.toJson(), 'addReporte');
     return response[0];
   }
 
