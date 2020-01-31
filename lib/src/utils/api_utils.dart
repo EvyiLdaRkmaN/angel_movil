@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:angel_proyect/src/models/usuario_model.dart';
+import 'package:angel_proyect/src/utils/prefs_utils.dart';
 import 'package:http/http.dart' as http;
 
 
@@ -54,6 +56,51 @@ class Api {
       print('---------------------------------------------------\n');
       return [false,'Error en $nameMetodo'];
     }
+  }
+
+
+  static Future<List<dynamic>> _put(String url, Map<String, dynamic> envio, String nameMetodo) async {
+    try {
+      final data = jsonEncode(envio);
+      final result = await http.put(
+        url,
+        body: data,
+        headers: {
+          "Accept": "application/json",
+          "content-type": "application/json"
+        });
+      
+      print('--------------Respuesta $nameMetodo ---------------\n');
+      final decodeData = json.decode(result.body);
+      print("Result =>>$decodeData.");
+      print("statusCode-->${result.statusCode}");
+      print('---------------------------------------------------\n');
+      final listResult = [result.statusCode == 200, decodeData];
+      return listResult;
+    } catch (e) {
+      print('--------------Respuesta $nameMetodo ---------------\n');
+      print(e);
+      print('---------------------------------------------------\n');
+      return [false,'Error en $nameMetodo'];
+    }
+  }
+
+  Future<bool> addUsuario(String nameUSer,String password) async {
+    final user = Usuario(nombreUsuario: nameUSer, usuarioContrasea: password);
+    final response = await _post(url+'/usuario', user.toJson(),'addUser');
+    return response[0];
+  }
+
+  Future<bool> login(String user,pass) async{
+    final response = await _put(url+'/login', {"nombreUsuario":user,"contraseña":pass}, 'login');
+    print('Resultado--->${response[0]}');
+    if (response[0]) {
+      final prefs = new PrefsAp();
+      await prefs.initPrefs();
+      prefs.user = usuarioToJson(Usuario.fromJson(response[1]['objUsuario'][0]));
+      // print('Datos-->'+prefs.user);
+    }
+    return response[0];
   }
 
 /*   Future<List<Cursos>> getCursos() async {

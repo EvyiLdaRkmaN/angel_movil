@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_web_browser/flutter_web_browser.dart';
 
 class SetReportPage extends StatefulWidget {
   @override
@@ -110,7 +109,7 @@ class _SetReportPageState extends State<SetReportPage> {
       icon: Icon(Icons.done,color: Color(colorBase),),
       iconSize: 50.0,
       onPressed: (){
-        FlutterWebBrowser.openWebPage(url: "https://flutter.io/", androidToolbarColor: Colors.deepPurple);
+        
       },
     );
   }

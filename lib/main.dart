@@ -1,6 +1,7 @@
 import 'package:angel_proyect/src/pages/home_page.dart';
 import 'package:angel_proyect/src/pages/sector_page.dart';
 import 'package:angel_proyect/src/pages/setReport_page.dart';
+import 'package:angel_proyect/src/utils/api_utils.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -37,7 +38,7 @@ class Inicio extends StatefulWidget {
 }
 
 class _InicioState extends State<Inicio> {
-  final _emailController = TextEditingController();
+  final _userController = TextEditingController();
   final _passController = TextEditingController();
   final _key = GlobalKey<ScaffoldState>();
 
@@ -71,7 +72,7 @@ class _InicioState extends State<Inicio> {
                     Icons.person,
                     size: 150,
                   ),
-                  inputEmail(),
+                  inputUser(),
                   inputPassword(),
                   SizedBox(height: 10.0,),
                   RaisedButton(
@@ -91,13 +92,13 @@ class _InicioState extends State<Inicio> {
     );
   }
 
-  Widget inputEmail(){
+  Widget inputUser(){
     return TextFormField(
-      controller: _emailController,
+      controller: _userController,
       decoration: InputDecoration(
         icon: Icon(Icons.alternate_email),
-        hintText: 'email@example.com',
-        labelText: 'Correo electronico'
+        hintText: 'nombre de usuario',
+        labelText: 'Usuario'
 
       ),
       keyboardType: TextInputType.emailAddress,
@@ -116,26 +117,25 @@ class _InicioState extends State<Inicio> {
   }
 
   void _iniciar() async{
-    final email = _emailController.text;
+    final user = _userController.text;
     final password = _passController.text;
     
     String messaje = '';
     bool response =false;
 
-    /* if ( email.isEmpty || password.isEmpty ) {
+    if ( user.isEmpty || password.isEmpty ) {
       messaje = 'Ingrese todos los datos';
     } else {
-      // final l = sesion.Login(email: email,password: password);
-      // response = await Api().login(l);
+      response = await Api().login(user,password);
       messaje = response 
           ?''
           : 'No se pudo iniciar sesión, revice sus datos';
-    } */
-
-    // final snackbar = SnackBar(content: Text(messaje),);
-    Navigator.pushReplacementNamed(context, 'homePage');
-    // response 
-    //   ? Navigator.pushReplacementNamed(context, 'homePage')
-    //   : _key.currentState.showSnackBar(snackbar);
+    }
+    
+    final snackbar = SnackBar(content: Text(messaje),);
+    
+    response 
+      ? Navigator.pushReplacementNamed(context, 'homePage')
+      : _key.currentState.showSnackBar(snackbar);
   }
 }
