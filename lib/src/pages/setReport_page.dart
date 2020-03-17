@@ -1,3 +1,4 @@
+import 'package:angel_proyect/src/models/localidades_models.dart';
 import 'package:angel_proyect/src/models/reporte_model.dart';
 import 'package:angel_proyect/src/utils/api_utils.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ class _SetReportPageState extends State<SetReportPage> {
   final colorBase = 0xFF33FF9B;
   String text= '';
   String dropdownValue  ='Prioridad';
+  String dropdownValueLoca  ='Localidad';
   final _localidadControll = TextEditingController();
   final _peticionControll = TextEditingController();
   final _objetivoControll = TextEditingController();
@@ -31,23 +33,31 @@ class _SetReportPageState extends State<SetReportPage> {
       ),
       body: Container(
         padding: EdgeInsets.all(10.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: _createElements(),
-            ),
-          ),
+        child: FutureBuilder(
+          future: Api().getLocalidades(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              return Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: _createElements(snapshot.data),
+                  ),
+                ),
+              );
+            }
+            return Center(child:CircularProgressIndicator());
+          },
         ),
       ),
     );
   }
 
-  List<Widget>_createElements(){
+  List<Widget>_createElements(List<Municipio> localidades){
     return [
       Text('Crear reporte eje '+text, style: Theme.of(context).textTheme.title,),
       SizedBox(height:10.0),
-      _inputLocalidad(),
+      _inputLocalidad(localidades),
       SizedBox(height:10.0),
       _inputPeticion(),
       SizedBox(height:10.0),
@@ -59,15 +69,20 @@ class _SetReportPageState extends State<SetReportPage> {
     ];
   }
 
-  Widget _inputLocalidad(){
-    return TextFormField(
-      controller: _localidadControll,
-      decoration: InputDecoration(
-        // icon: Icon(Icons.lock),
-        hintText: 'Localidad',
-        labelText: 'Localidad'
-      ),
+  Widget _inputLocalidad(List<Municipio> loc){
+    List<String> list = ['Localidad'];
+    list.addAll(loc.map((f)=>f.nombreLocalidad).toList());
     
+    return DropdownButton<String>(
+      value: dropdownValueLoca ,
+      items: list.map((f)=>DropdownMenuItem<String>(child: Text(f),value: f,)).toList(), 
+      onChanged: (String value) {
+        print('Valor drop--->$value');
+        setState(() {
+          dropdownValueLoca  = value;
+        });
+      },
+      isExpanded: true,
     );
   }
 
@@ -116,7 +131,7 @@ class _SetReportPageState extends State<SetReportPage> {
       iconSize: 50.0,
       onPressed: () async{
         String mensaje = '';
-        String localidad = _localidadControll.text;
+        String localidad = dropdownValueLoca;
         String peticion = _peticionControll.text;
         String objetivo = _objetivoControll.text;
         String tipo     = dropdownValue;
@@ -137,6 +152,7 @@ class _SetReportPageState extends State<SetReportPage> {
             _objetivoControll.clear();
             setState(() {
               dropdownValue = 'Prioridad';
+              dropdownValueLoca = 'Localidad';
             });
           }
         }

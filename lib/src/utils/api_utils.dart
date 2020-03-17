@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:angel_proyect/src/models/localidades_models.dart';
 import 'package:angel_proyect/src/models/reporte_model.dart';
 import 'package:angel_proyect/src/models/usuario_model.dart';
 import 'package:angel_proyect/src/utils/prefs_utils.dart';
@@ -109,40 +110,9 @@ class Api {
     return response[0];
   }
 
-/*   Future<List<Cursos>> getCursos() async {
-    final response = await _get('$url/cursos');
-    return response != null ? cursosFromJson(response):null;
+  Future<List<Municipio>> getLocalidades() async{
+    final Localidades response = localidadesFromJson(await _get(url+'/getMunicipios'));
+    return response.municipios;
   }
-
-  Future<List<Publicaciones>> getPublicaciones() async {
-    final response = await _get('$url/publicaciones');
-    return response != null ? publicacionesFromJson(response):null;
-  }
-  
-  Future<bool> addDenuncia(Denuncia d) async {
-    final respone = await _post(url+'/denuncias/crear', d.toJson(), 'Crear denuncia');
-    return respone[0];
-  }
-
-  Future<bool> addSolicitud(Solicitud s) async {
-    final respone = await _post(url+'/solicitudes/crear', s.toJson(), 'Crear solicitud');
-    return respone[0];
-  }
-
-  Future<bool> addPublicacion(CrearPublicacion p) async {
-    final respone = await _post(url+'/publicaciones/crear', p.toJson(), 'Crear addPublicacion');
-    return respone[0];
-  }
-
-  Future<bool> login(Login l) async {
-    final respone = await _post(url+'/auth/login', l.toJson(), 'Crear login');
-    if (respone[0]) {
-      final prefs = new PrefsAp();
-      await prefs.initPrefs();
-      prefs.user = usuarioToJson(Usuario.fromJson(respone[1]));
-      print('Datos-->'+prefs.user);
-    }
-    return respone[0];
-  } */
 
 }
