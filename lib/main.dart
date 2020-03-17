@@ -2,26 +2,33 @@ import 'package:angel_proyect/src/pages/home_page.dart';
 import 'package:angel_proyect/src/pages/sector_page.dart';
 import 'package:angel_proyect/src/pages/setReport_page.dart';
 import 'package:angel_proyect/src/utils/api_utils.dart';
+import 'package:angel_proyect/src/utils/prefs_utils.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = PrefsAp();
+  await prefs.initPrefs();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  final prefs = PrefsAp();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/',
+      initialRoute: prefs.user.isEmpty ? '/' : 'homePage',
       routes: {
-        '/': (context) => Inicio(), 
+        '/': (context) => Inicio(),
         'homePage': (contex) => HomePage(),
-        'sector':(context) => SectorPage(),
-        'setReport':(context) => SetReportPage(),},
+        'sector': (context) => SectorPage(),
+        'setReport': (context) => SetReportPage(),
+      },
       // home: Inicio(title: 'Flutter Demo Home Page'),
     );
   }
@@ -29,7 +36,6 @@ class MyApp extends StatelessWidget {
 
 class Inicio extends StatefulWidget {
   Inicio({Key key, this.title}) : super(key: key);
-
 
   final String title;
 
@@ -44,7 +50,6 @@ class _InicioState extends State<Inicio> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       key: _key,
       appBar: AppBar(
@@ -64,7 +69,10 @@ class _InicioState extends State<Inicio> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text('Iniciar sesión',style:Theme.of(context).textTheme.title,),
+                  Text(
+                    'Iniciar sesión',
+                    style: Theme.of(context).textTheme.title,
+                  ),
                   SizedBox(
                     height: 20.0,
                   ),
@@ -74,12 +82,16 @@ class _InicioState extends State<Inicio> {
                   ),
                   inputUser(),
                   inputPassword(),
-                  SizedBox(height: 10.0,),
+                  SizedBox(
+                    height: 10.0,
+                  ),
                   RaisedButton(
-                    child: Text('Iniciar', style: TextStyle(color: Colors.white),),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18.0)
+                    child: Text(
+                      'Iniciar',
+                      style: TextStyle(color: Colors.white),
                     ),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0)),
                     color: Colors.blue,
                     onPressed: _iniciar,
                   )
@@ -92,50 +104,48 @@ class _InicioState extends State<Inicio> {
     );
   }
 
-  Widget inputUser(){
+  Widget inputUser() {
     return TextFormField(
       controller: _userController,
       decoration: InputDecoration(
-        icon: Icon(Icons.alternate_email),
-        hintText: 'nombre de usuario',
-        labelText: 'Usuario'
-
-      ),
+          icon: Icon(Icons.alternate_email),
+          hintText: 'nombre de usuario',
+          labelText: 'Usuario'),
       keyboardType: TextInputType.emailAddress,
     );
   }
-  Widget inputPassword(){
+
+  Widget inputPassword() {
     return TextFormField(
       controller: _passController,
       decoration: InputDecoration(
-        icon: Icon(Icons.lock),
-        hintText: 'ingresa tu contraseña',
-        labelText: 'Contraseña'
-      ),
+          icon: Icon(Icons.lock),
+          hintText: 'ingresa tu contraseña',
+          labelText: 'Contraseña'),
       obscureText: true,
     );
   }
 
-  void _iniciar() async{
+  void _iniciar() async {
     final user = _userController.text;
     final password = _passController.text;
-    
-    String messaje = '';
-    bool response =false;
 
-    if ( user.isEmpty || password.isEmpty ) {
+    String messaje = '';
+    bool response = false;
+
+    if (user.isEmpty || password.isEmpty) {
       messaje = 'Ingrese todos los datos';
     } else {
-      response = await Api().login(user,password);
-      messaje = response 
-          ?''
-          : 'No se pudo iniciar sesión, revice sus datos';
+      response = await Api().login(user, password);
+      messaje = response ? '' : 'No se pudo iniciar sesión, revice sus datos';
     }
-    
-    final snackbar = SnackBar(content: Text(messaje),);
-    
-    response 
-      ? Navigator.pushReplacementNamed(context, 'homePage')
-      : _key.currentState.showSnackBar(snackbar);
+
+    final snackbar = SnackBar(
+      content: Text(messaje),
+    );
+
+    response
+        ? Navigator.pushReplacementNamed(context, 'homePage')
+        : _key.currentState.showSnackBar(snackbar);
   }
 }

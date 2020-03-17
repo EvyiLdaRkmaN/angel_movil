@@ -23,7 +23,7 @@ class PrefsAp {
   }
 
   // GET y SET del genero
-  get user => _prefs.getString('user') ?? '';
+  String get user => _prefs.getString('user') ?? '';
 
   set user (String value) =>_prefs.setString('user', value);
   

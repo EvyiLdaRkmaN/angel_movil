@@ -40,7 +40,13 @@ class HomePage extends StatelessWidget {
         child: Text('Sistema de mensajeria'),
         onPressed: ()=>FlutterWebBrowser.openWebPage(url: "https://r-angel.herokuapp.com/chat.html?nombre=${user.nombreUsuario}&sala=asistencia", androidToolbarColor: Colors.deepPurple),
         color: Color(colorBase),
-      )
+      ),
+      RaisedButton(
+        child: Text('Cerrar sesión'),
+        onPressed: () async {
+        prefs.cleanPrefs();
+        Navigator.pushNamedAndRemoveUntil(context, '/', (Route<dynamic> route) => false);
+      })
     ];
   }
 
